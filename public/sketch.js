@@ -19,7 +19,7 @@ function setup() {
   //tavolozza
   push();
   strokeWeight(3);
-  rect(width / 20, height / 20 * 16, 200, 100);
+  rect(width / 20, height / 20 * 16, 200, 108);
   pop();
   //welcome message
   push();
@@ -32,7 +32,7 @@ function setup() {
 }
 
 function draw() {
-  image(myImage, 0, 0, windowWidth, windowHeight);
+  image(myImage, 0, windowHeight/20, windowWidth, windowHeight/20*18);
 }
 
 //funzioni da ricezione server
