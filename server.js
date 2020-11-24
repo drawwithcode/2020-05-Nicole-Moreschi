@@ -2,51 +2,44 @@ console.log("node is running")
 
 
 // crea local server
-let express = require("express"); //Load the express code
-let socket = require("socket.io"); //Load the socket package
-let app = express(); //create local host
-let port = 3000; //dichiara server port (3000 standard)
-let server = app.listen(port); //aspetta che qualcuno si connetta (da browser "localhost:3000")
-//per stoppare (ctrl+c); per riavviare "node server.js" (da terminale)
+let express = require("express");
+let socket = require("socket.io");
+let app = express();
+let port = 3000;
+let server = app.listen(port);
 
 //crea folder per client ("public")
-app.use(express.static("public")); //mostra ai clienti la certella public
+app.use(express.static("public"));
 
 //crea connessione input/output
-let io = socket(server) //variabile input output: crea connessione input (da cliente to server)
-io.on("connection", newConnection) //all'evento "connection" esegui "newConnection()"
-// = esegui ogni volta che si crea una nuova connessione
+let io = socket(server)
+io.on("connection", newConnection)
 
-
-//Variabili sketch
-let numberUser = 0;
-var color = ["#F54F29", "#FF974F", "#FFD393", "#9C9B7A", "#405952"];
+//colori disponibili
+let nUser = 0; //per numerare utenti
+var color = ["#c82f0e", "#e29432", "#e9e3b3", "#518d84", "#162a49", "#1d1415", "#712c0b", "#945537"];
 
 function newConnection(socket) {
-  console.log("new connection: " + socket.client.id) //mostra codice connessione cliente
-  //assegna a ogni utente un numero da 1 a 5
-  if (numberUser < 5) {
-    numberUser++;
+  //assegna a ogni utente un numero da 1 a 8
+  if (nUser < 8) {
+    nUser++;
   } else {
-    numberUser = 1
+    nUser = 1
   };
-  //assegna colore per ogni user
-  let i = numberUser;
+  //assegna colore per ogni utente
+  let i = nUser;
   let clientColor = color[i - 1];
 
-  //emetti messaggio colore e numero utente
-  socket.emit("number", numberUser); //manda messaggio "number" per indicare n.utente
-  socket.emit("color", clientColor); //manda messaggio "color"
-  //manda messaggio a tutti utenti (colore e n.utente)
-  let clientData = {
-    clientColor: clientColor,
-    numberUser: numberUser
-  }
-  socket.broadcast.emit("newPlayer", clientData);
+  //emetti numero e colore
+  socket.emit("number", nUser); //numero utente
+  socket.emit("color", clientColor); //colore utente
 
-  socket.on("mouse", mouseMessage); //se arriva un messaggio di tipo "mouse" dal client(nello sketch), mouseMessage()
+  //manda broadcast (colore)
+  socket.broadcast.emit("newPlayer", clientColor);
+
+  socket.on("mouse", mouseMessage);
+
   function mouseMessage(dataReceived) {
-    console.log(socket.client.id, dataReceived);
-    socket.broadcast.emit("mouseBroadcast", dataReceived) //crea nuovo messaggio da emettere a ogni client
+    socket.broadcast.emit("mouseBroadcast", dataReceived)
   }
 }
